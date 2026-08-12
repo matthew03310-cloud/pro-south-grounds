@@ -130,12 +130,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const dotsContainer = document.getElementById('carousel-dots');
     let currentSlide = 0;
     let cardsPerView = getCardsPerView();
+    const trackGap = 24;
 
     function getCardsPerView() {
         if (window.innerWidth <= 480) return 1;
         if (window.innerWidth <= 768) return 1;
         if (window.innerWidth <= 1024) return 2;
         return 3;
+    }
+
+    function getTrackWidth() {
+        const container = reviewsTrack.parentElement;
+        return container ? container.clientWidth : window.innerWidth;
+    }
+
+    function setCardWidths() {
+        const trackWidth = getTrackWidth();
+        const cardWidth = (trackWidth - trackGap * (cardsPerView - 1)) / cardsPerView;
+        reviewCards.forEach(card => {
+            card.style.flexBasis = cardWidth + 'px';
+            card.style.width = cardWidth + 'px';
+        });
     }
 
     function getTotalSlides() {
@@ -157,8 +172,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function goToSlide(index) {
         const total = getTotalSlides();
         currentSlide = Math.max(0, Math.min(index, total - 1));
-        const cardWidth = reviewCards[0].offsetWidth + 24; // gap
-        reviewsTrack.style.transform = `translateX(-${currentSlide * cardWidth}px)`;
+        const cardWidth = reviewCards[0].offsetWidth;
+        reviewsTrack.style.transform = `translateX(-${currentSlide * (cardWidth + trackGap)}px)`;
 
         dotsContainer.querySelectorAll('.carousel-dot').forEach((dot, i) => {
             dot.classList.toggle('active', i === currentSlide);
@@ -185,10 +200,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, { passive: true });
 
+    setCardWidths();
     createDots();
 
     window.addEventListener('resize', () => {
         cardsPerView = getCardsPerView();
+        setCardWidths();
         createDots();
         goToSlide(Math.min(currentSlide, getTotalSlides() - 1));
     });
