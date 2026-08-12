@@ -221,14 +221,14 @@ ul { list-style: none; }
     min-height: 100vh;
     display: flex;
     align-items: center;
-    background: url('https://images.unsplash.com/photo-1558904541-efa843a96f01?w=1920&h=1080&fit=crop') center/cover no-repeat;
+    background: url('images/6039.heic.jpg') center/cover no-repeat;
     padding-top: 80px;
 }
 
 .hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(27, 67, 50, 0.92) 0%, rgba(45, 106, 79, 0.85) 50%, rgba(26, 26, 46, 0.8) 100%);
+    background: linear-gradient(135deg, rgba(10, 10, 20, 0.9) 0%, rgba(26, 26, 46, 0.82) 50%, rgba(10, 10, 20, 0.75) 100%);
 }
 
 .hero-content {
@@ -240,16 +240,16 @@ ul { list-style: none; }
 
 .hero-badge {
     display: inline-block;
-    background: rgba(212, 168, 67, 0.2);
-    color: var(--accent);
+    background: rgba(232, 93, 4, 0.25);
+    color: #ffb066;
     padding: 6px 16px;
     border-radius: 50px;
     font-family: var(--font-heading);
-    font-weight: 600;
+    font-weight: 700;
     font-size: 0.85rem;
     letter-spacing: 1px;
     text-transform: uppercase;
-    border: 1px solid rgba(212, 168, 67, 0.3);
+    border: 1px solid rgba(232, 93, 4, 0.45);
     margin-bottom: 24px;
 }
 
@@ -264,7 +264,7 @@ ul { list-style: none; }
 
 .hero-subtitle {
     font-size: 1.15rem;
-    color: rgba(255,255,255,0.9);
+    color: rgba(255,255,255,0.92);
     margin-bottom: 36px;
     max-width: 550px;
 }
@@ -278,30 +278,46 @@ ul { list-style: none; }
 
 .hero-stats {
     display: flex;
-    gap: 48px;
+    gap: 24px;
 }
 
 .stat {
     text-align: center;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.18);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: var(--radius-md);
+    padding: 20px 28px;
+    min-width: 140px;
+    transition: var(--transition);
+}
+
+.stat:hover {
+    background: rgba(255,255,255,0.16);
+    transform: translateY(-4px);
 }
 
 .stat-number {
     display: block;
     font-family: var(--font-heading);
-    font-size: 2rem;
+    font-size: 2.4rem;
     font-weight: 800;
-    color: var(--accent);
+    color: #ffb066;
+    line-height: 1.1;
+    margin-bottom: 6px;
 }
 
 .stat-label {
-    font-size: 0.85rem;
-    color: rgba(255,255,255,0.8);
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.95);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    font-weight: 600;
 }
 
 .stat-label i {
-    color: var(--accent);
+    color: #ffb066;
 }
 
 /* ========================================
@@ -1849,13 +1865,27 @@ ul { list-style: none; }
     .hero-stats {
         flex-direction: column;
         gap: 12px;
-        align-items: flex-start;
+        width: 100%;
     }
 
     .stat {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 16px;
+        width: 100%;
+        text-align: left;
+        padding: 16px 20px;
+        min-width: 0;
+    }
+
+    .stat-number {
+        font-size: 1.8rem;
+        min-width: 72px;
+        margin-bottom: 0;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
     }
 
     .gallery-grid {
