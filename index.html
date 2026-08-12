@@ -852,9 +852,9 @@
             </div>
             <div class="contact-grid">
                 <div class="contact-form-wrapper">
-                    <form id="contact-form" class="contact-form" name="contact" data-netlify="true" data-netlify-recaptcha="false">
+                    <form id="contact-form" class="contact-form" name="contact" action="/" method="POST" netlify data-netlify-honeypot="bot-field">
                         <input type="hidden" name="form-name" value="contact">
-                        <p class="hidden" style="display:none;"><input name="bot-field" tabindex="-1" autocomplete="off"></p>
+                        <p style="display:none;"><label>Don't fill this out if you're human: <input name="bot-field"></label></p>
                         <div class="form-group">
                             <label for="name">Full Name *</label>
                             <input type="text" id="name" name="name" required placeholder="John Smith">
