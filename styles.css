@@ -963,7 +963,6 @@ ul { list-style: none; }
     position: relative;
     overflow-x: auto;
     overflow-y: hidden;
-    scroll-snap-type: x proximity;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -981,7 +980,6 @@ ul { list-style: none; }
 .review-card {
     flex: 0 0 auto;
     width: 100%;
-    scroll-snap-align: start;
     background: var(--white);
     border-radius: var(--radius-md);
     padding: 32px;
