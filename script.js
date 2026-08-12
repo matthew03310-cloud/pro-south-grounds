@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentLightboxIndex = index;
         const item = visibleItems[currentLightboxIndex];
         const img = item.querySelector('img');
-        lightboxImg.src = img.src.replace('w=600&h=400', 'w=1200&h=800');
+        lightboxImg.src = img.src;
         lightboxImg.alt = img.alt;
         lightboxCaption.textContent = item.dataset.caption;
         lightbox.classList.add('active');
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentLightboxIndex = (currentLightboxIndex + direction + visibleItems.length) % visibleItems.length;
         const item = visibleItems[currentLightboxIndex];
         const img = item.querySelector('img');
-        lightboxImg.src = img.src.replace('w=600&h=400', 'w=1200&h=800');
+        lightboxImg.src = img.src;
         lightboxCaption.textContent = item.dataset.caption;
     }
 
@@ -227,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="form-success">
                 <i class="fas fa-check-circle"></i>
                 <h3>Thank You, ${name}!</h3>
-                <p>We've received your message and will get back to you within 24 hours. For immediate assistance, call us at <a href="tel:5551234567" style="color:var(--primary);font-weight:600;">(555) 123-4567</a>.</p>
+                <p>We've received your message and will get back to you within 24 hours. For immediate assistance, call us at <a href="tel:7068812136" style="color:var(--primary);font-weight:600;">706-881-2136</a>.</p>
             </div>
         `;
     });
