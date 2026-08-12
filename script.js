@@ -223,13 +223,29 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData(contactForm);
         const name = formData.get('name');
 
-        contactForm.innerHTML = `
+        const successHTML = `
             <div class="form-success">
                 <i class="fas fa-check-circle"></i>
                 <h3>Thank You, ${name}!</h3>
                 <p>We've received your message and will get back to you within 24 hours. For immediate assistance, call us at <a href="tel:7068812136" style="color:var(--primary);font-weight:600;">706-881-2136</a>.</p>
             </div>
         `;
+
+        const errorHTML = `
+            <div class="form-success">
+                <i class="fas fa-exclamation-circle"></i>
+                <h3>Something went wrong.</h3>
+                <p>Please try again, or call us directly at <a href="tel:7068812136" style="color:var(--primary);font-weight:600;">706-881-2136</a>.</p>
+            </div>
+        `;
+
+        fetch('/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams(formData).toString()
+        })
+        .then(() => { contactForm.innerHTML = successHTML; })
+        .catch(() => { contactForm.innerHTML = errorHTML; });
     });
 
     // ---- Scroll Reveal Animation ----
