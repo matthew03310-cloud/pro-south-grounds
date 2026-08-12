@@ -251,46 +251,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ---- Before & After Sliders ----
-    document.querySelectorAll('.ba-slider').forEach(slider => {
-        const wrapper = slider.querySelector('.ba-img-wrapper');
-        const beforeClip = slider.querySelector('.ba-before-clip');
-        const handle = slider.querySelector('.ba-handle');
-        let isDragging = false;
-
-        function updateSlider(x) {
-            const rect = wrapper.getBoundingClientRect();
-            let percent = ((x - rect.left) / rect.width) * 100;
-            percent = Math.max(2, Math.min(98, percent));
-            beforeClip.style.width = percent + '%';
-            handle.style.left = percent + '%';
-        }
-
-        function startDrag(e) {
-            isDragging = true;
-            slider.style.cursor = 'grabbing';
-            const x = e.touches ? e.touches[0].clientX : e.clientX;
-            updateSlider(x);
-        }
-
-        function onDrag(e) {
-            if (!isDragging) return;
-            e.preventDefault();
-            const x = e.touches ? e.touches[0].clientX : e.clientX;
-            updateSlider(x);
-        }
-
-        function stopDrag() {
-            isDragging = false;
-            slider.style.cursor = 'ew-resize';
-        }
-
-        slider.addEventListener('mousedown', startDrag);
-        slider.addEventListener('touchstart', startDrag, { passive: true });
-        window.addEventListener('mousemove', onDrag);
-        window.addEventListener('touchmove', onDrag, { passive: false });
-        window.addEventListener('mouseup', stopDrag);
-        window.addEventListener('touchend', stopDrag);
-    });
-
 });
