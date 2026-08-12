@@ -123,6 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ---- Reviews Carousel ----
+    const reviewsCarousel = document.querySelector('.reviews-carousel');
     const reviewsTrack = document.getElementById('reviews-track');
     const reviewCards = reviewsTrack.querySelectorAll('.review-card');
     const prevBtn = document.querySelector('.prev-btn');
@@ -140,8 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getTrackWidth() {
-        const container = reviewsTrack.parentElement;
-        return container ? container.clientWidth : window.innerWidth;
+        return reviewsCarousel.clientWidth;
     }
 
     function setCardWidths() {
@@ -169,12 +169,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function getSlidePosition() {
+        const cardWidth = reviewCards[0].offsetWidth;
+        return cardWidth + trackGap;
+    }
+
     function goToSlide(index) {
         const total = getTotalSlides();
         currentSlide = Math.max(0, Math.min(index, total - 1));
-        const cardWidth = reviewCards[0].offsetWidth;
-        reviewsTrack.style.transform = `translateX(-${currentSlide * (cardWidth + trackGap)}px)`;
+        reviewsCarousel.scrollTo({
+            left: currentSlide * getSlidePosition(),
+            behavior: 'smooth'
+        });
+        updateActiveDot();
+    }
 
+    function updateActiveDot() {
         dotsContainer.querySelectorAll('.carousel-dot').forEach((dot, i) => {
             dot.classList.toggle('active', i === currentSlide);
         });
@@ -183,20 +193,14 @@ document.addEventListener('DOMContentLoaded', () => {
     prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
     nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
 
-    // Touch/swipe support for carousel
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    reviewsTrack.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-
-    reviewsTrack.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        const diff = touchStartX - touchEndX;
-        if (Math.abs(diff) > 50) {
-            if (diff > 0) goToSlide(currentSlide + 1);
-            else goToSlide(currentSlide - 1);
+    reviewsCarousel.addEventListener('scroll', () => {
+        const pos = getSlidePosition();
+        if (pos > 0) {
+            const active = Math.round(reviewsCarousel.scrollLeft / pos);
+            if (active !== currentSlide) {
+                currentSlide = active;
+                updateActiveDot();
+            }
         }
     }, { passive: true });
 
@@ -207,7 +211,8 @@ document.addEventListener('DOMContentLoaded', () => {
         cardsPerView = getCardsPerView();
         setCardWidths();
         createDots();
-        goToSlide(Math.min(currentSlide, getTotalSlides() - 1));
+        reviewsCarousel.scrollLeft = 0;
+        goToSlide(0);
     });
 
     // ---- Contact Form ----
