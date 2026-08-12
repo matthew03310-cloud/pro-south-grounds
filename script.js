@@ -1,0 +1,296 @@
+/* ========================================
+   Pro South Grounds - Main JavaScript
+   ======================================== */
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    // ---- Sticky Header ----
+    const header = document.getElementById('main-header');
+    window.addEventListener('scroll', () => {
+        header.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // ---- Mobile Navigation ----
+    const mobileToggle = document.getElementById('mobile-toggle');
+    const mainNav = document.getElementById('main-nav');
+
+    mobileToggle.addEventListener('click', () => {
+        mobileToggle.classList.toggle('active');
+        mainNav.classList.toggle('active');
+    });
+
+    // Close mobile nav on link click
+    mainNav.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            mobileToggle.classList.remove('active');
+            mainNav.classList.remove('active');
+        });
+    });
+
+    // ---- Smooth Scroll for Anchor Links ----
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = document.querySelector(anchor.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+
+    // ---- Gallery Filter ----
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const galleryItems = document.querySelectorAll('.gallery-item');
+
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const filter = btn.dataset.filter;
+
+            galleryItems.forEach(item => {
+                if (filter === 'all' || item.dataset.category === filter) {
+                    item.classList.remove('hidden');
+                    item.style.animation = 'fadeInUp 0.4s ease forwards';
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        });
+    });
+
+    // ---- Lightbox ----
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxCaption = document.getElementById('lightbox-caption');
+    const lightboxClose = document.querySelector('.lightbox-close');
+    const lightboxPrev = document.querySelector('.lightbox-prev');
+    const lightboxNext = document.querySelector('.lightbox-next');
+    let currentLightboxIndex = 0;
+    let visibleItems = [];
+
+    function updateVisibleItems() {
+        visibleItems = Array.from(galleryItems).filter(item => !item.classList.contains('hidden'));
+    }
+
+    function openLightbox(index) {
+        updateVisibleItems();
+        currentLightboxIndex = index;
+        const item = visibleItems[currentLightboxIndex];
+        const img = item.querySelector('img');
+        lightboxImg.src = img.src.replace('w=600&h=400', 'w=1200&h=800');
+        lightboxImg.alt = img.alt;
+        lightboxCaption.textContent = item.dataset.caption;
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        lightbox.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function navigateLightbox(direction) {
+        updateVisibleItems();
+        currentLightboxIndex = (currentLightboxIndex + direction + visibleItems.length) % visibleItems.length;
+        const item = visibleItems[currentLightboxIndex];
+        const img = item.querySelector('img');
+        lightboxImg.src = img.src.replace('w=600&h=400', 'w=1200&h=800');
+        lightboxCaption.textContent = item.dataset.caption;
+    }
+
+    galleryItems.forEach((item, i) => {
+        item.addEventListener('click', () => {
+            updateVisibleItems();
+            const idx = visibleItems.indexOf(item);
+            openLightbox(idx >= 0 ? idx : 0);
+        });
+    });
+
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightboxPrev.addEventListener('click', () => navigateLightbox(-1));
+    lightboxNext.addEventListener('click', () => navigateLightbox(1));
+
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) closeLightbox();
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (!lightbox.classList.contains('active')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') navigateLightbox(-1);
+        if (e.key === 'ArrowRight') navigateLightbox(1);
+    });
+
+    // ---- Reviews Carousel ----
+    const reviewsTrack = document.getElementById('reviews-track');
+    const reviewCards = reviewsTrack.querySelectorAll('.review-card');
+    const prevBtn = document.querySelector('.prev-btn');
+    const nextBtn = document.querySelector('.next-btn');
+    const dotsContainer = document.getElementById('carousel-dots');
+    let currentSlide = 0;
+    let cardsPerView = getCardsPerView();
+
+    function getCardsPerView() {
+        if (window.innerWidth <= 480) return 1;
+        if (window.innerWidth <= 768) return 1;
+        if (window.innerWidth <= 1024) return 2;
+        return 3;
+    }
+
+    function getTotalSlides() {
+        return Math.max(1, reviewCards.length - cardsPerView + 1);
+    }
+
+    function createDots() {
+        dotsContainer.innerHTML = '';
+        const total = getTotalSlides();
+        for (let i = 0; i < total; i++) {
+            const dot = document.createElement('div');
+            dot.classList.add('carousel-dot');
+            if (i === 0) dot.classList.add('active');
+            dot.addEventListener('click', () => goToSlide(i));
+            dotsContainer.appendChild(dot);
+        }
+    }
+
+    function goToSlide(index) {
+        const total = getTotalSlides();
+        currentSlide = Math.max(0, Math.min(index, total - 1));
+        const cardWidth = reviewCards[0].offsetWidth + 24; // gap
+        reviewsTrack.style.transform = `translateX(-${currentSlide * cardWidth}px)`;
+
+        dotsContainer.querySelectorAll('.carousel-dot').forEach((dot, i) => {
+            dot.classList.toggle('active', i === currentSlide);
+        });
+    }
+
+    prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
+    nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
+
+    // Touch/swipe support for carousel
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    reviewsTrack.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    reviewsTrack.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+            if (diff > 0) goToSlide(currentSlide + 1);
+            else goToSlide(currentSlide - 1);
+        }
+    }, { passive: true });
+
+    createDots();
+
+    window.addEventListener('resize', () => {
+        cardsPerView = getCardsPerView();
+        createDots();
+        goToSlide(Math.min(currentSlide, getTotalSlides() - 1));
+    });
+
+    // ---- Contact Form ----
+    const contactForm = document.getElementById('contact-form');
+    contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(contactForm);
+        const name = formData.get('name');
+
+        contactForm.innerHTML = `
+            <div class="form-success">
+                <i class="fas fa-check-circle"></i>
+                <h3>Thank You, ${name}!</h3>
+                <p>We've received your message and will get back to you within 24 hours. For immediate assistance, call us at <a href="tel:5551234567" style="color:var(--primary);font-weight:600;">(555) 123-4567</a>.</p>
+            </div>
+        `;
+    });
+
+    // ---- Scroll Reveal Animation ----
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.service-card, .gallery-item, .review-card, .about-feature, .area-item, .contact-card').forEach(el => {
+        el.style.opacity = '0';
+        observer.observe(el);
+    });
+
+    // ---- Active Nav Link on Scroll ----
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('#main-nav a');
+
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 120;
+            if (window.scrollY >= sectionTop) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.style.color = '';
+            if (link.getAttribute('href') === `#${current}`) {
+                link.style.color = 'var(--primary)';
+            }
+        });
+    });
+
+    // ---- Before & After Sliders ----
+    document.querySelectorAll('.ba-slider').forEach(slider => {
+        const wrapper = slider.querySelector('.ba-img-wrapper');
+        const beforeClip = slider.querySelector('.ba-before-clip');
+        const handle = slider.querySelector('.ba-handle');
+        let isDragging = false;
+
+        function updateSlider(x) {
+            const rect = wrapper.getBoundingClientRect();
+            let percent = ((x - rect.left) / rect.width) * 100;
+            percent = Math.max(2, Math.min(98, percent));
+            beforeClip.style.width = percent + '%';
+            handle.style.left = percent + '%';
+        }
+
+        function startDrag(e) {
+            isDragging = true;
+            slider.style.cursor = 'grabbing';
+            const x = e.touches ? e.touches[0].clientX : e.clientX;
+            updateSlider(x);
+        }
+
+        function onDrag(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            const x = e.touches ? e.touches[0].clientX : e.clientX;
+            updateSlider(x);
+        }
+
+        function stopDrag() {
+            isDragging = false;
+            slider.style.cursor = 'ew-resize';
+        }
+
+        slider.addEventListener('mousedown', startDrag);
+        slider.addEventListener('touchstart', startDrag, { passive: true });
+        window.addEventListener('mousemove', onDrag);
+        window.addEventListener('touchmove', onDrag, { passive: false });
+        window.addEventListener('mouseup', stopDrag);
+        window.addEventListener('touchend', stopDrag);
+    });
+
+});
